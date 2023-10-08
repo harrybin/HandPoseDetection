@@ -11,9 +11,9 @@ const fingerJoints = {
 const style = {
   0: { color: "yellow", size: 15 },
   1: { color: "gold", size: 6 },
-  2: { color: "green", size: 10 },
-  3: { color: "gold", size: 6 },
-  4: { color: "gold", size: 6 },
+  2: { color: "green", size: 10 }, // thunb trunk
+  3: { color: "gold", size: 6 },   // thumb middle
+  4: { color: "gold", size: 6 },   // thumb tip
   5: { color: "purple", size: 10 },
   6: { color: "gold", size: 6 },
   7: { color: "gold", size: 6 },
@@ -33,7 +33,27 @@ const style = {
 };
 
 // Drawing function
-export const drawHand = (predictions, ctx) => {
+export const drawImage = (predictions, ctx, img) => {
+  // Check if we have predictions
+  var thumbsUp = false;
+  var thumbTip = [0,0];
+  if (predictions.length > 0) {
+    // Loop through each prediction
+    predictions.forEach((prediction) => {
+      // Grab landmarks
+      const landmarks = prediction.landmarks;
+      const thumbTrunk = landmarks[2];
+      thumbTip = landmarks[4];
+      const thumbTrunkY = thumbTrunk[1];
+      const thumbTipY = thumbTip[1];
+      thumbsUp = thumbTipY < thumbTrunkY;
+    });
+    if(thumbsUp)
+      ctx.drawImage(img,thumbTip[0]-(171/2), thumbTip[1]-121, 171, 121, );  
+  }
+};
+
+export const drawFullHand = (predictions, ctx, img) => {
   // Check if we have predictions
   if (predictions.length > 0) {
     // Loop through each prediction
@@ -80,6 +100,10 @@ export const drawHand = (predictions, ctx) => {
         ctx.fillStyle = style[i]["color"];
         ctx.fill();
       }
+
+     
+
     });
   }
 };
+
